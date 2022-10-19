@@ -10,11 +10,69 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Board {
+typedef struct board {
     int line_count;
     int col_count;
     char** squares;
 } board;
+
+typedef struct piece {
+    int line;
+    int col;
+} piece;
+
+piece get_piece(char line_char, char col_char) {
+    int line, col;
+
+    switch (col_char) 
+    {
+        case 'a':
+            col = 0;
+            break;
+        case 'b':
+            col = 1;
+            break;
+        case 'c':
+            col = 2;
+            break;
+        case 'd':
+            col = 3;
+            break;
+        case 'e':
+            col = 4;
+            break;
+        case 'f':
+            col = 5;
+            break;
+    }
+
+    switch (line_char) {
+        case '1':
+            line = 5;
+            break;
+        case '2':
+            line = 4;
+        break;
+        case '3':
+            line = 3;
+        break;
+        case '4':
+            line = 2;
+        break;
+        case '5':
+            line = 1;
+        break;
+        case '6':
+            line = 0;
+        break;
+    }
+
+    piece new_piece;
+    new_piece.col = col;
+    new_piece.line = line;
+
+    return new_piece;
+}
 
 board* make_board(int l, int c) {
     
@@ -100,12 +158,16 @@ void move_piece(board* game_board,
 
 int main() {
     board* game_board = make_board(6, 6);
-
     fill_board(game_board);
 
-    print_board(game_board);
-    move_piece(game_board, 4, 1, 3, 2);
-    print_board(game_board);
+    while (1) {
+        char line_char, col_char, direction;
+        scanf("%c%c %c", &col_char, &line_char, &direction);
+
+        piece new_piece = get_piece(line_char, col_char);
+        printf("line: %d\n", new_piece.line);
+        printf("col: %d\n", new_piece.col);
+    }
 
     // Libera memória ocupada pela board
     destroy_board(game_board);
