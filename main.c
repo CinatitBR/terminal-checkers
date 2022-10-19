@@ -119,7 +119,7 @@ void print_board(board* game_board) {
 }
 
 // Preenche board com as peças brancas e pretas
-void fill_board(board* game_board) {
+void place_pieces(board* game_board) {
 
     // Coloca peças pretas
     for (int line = 0; line < 2; line++) {
@@ -158,15 +158,15 @@ void move_piece(board* game_board,
 
 int main() {
     board* game_board = make_board(6, 6);
-    fill_board(game_board);
+    place_pieces(game_board);
 
     while (1) {
         char line_char, col_char, direction;
         scanf("%c%c %c", &col_char, &line_char, &direction);
 
-        piece new_piece = get_piece(line_char, col_char);
-        printf("line: %d\n", new_piece.line);
-        printf("col: %d\n", new_piece.col);
+        piece input_piece = get_piece(line_char, col_char);
+        printf("line: %d\n", input_piece.line);
+        printf("col: %d\n", input_piece.col);
     }
 
     // Libera memória ocupada pela board
