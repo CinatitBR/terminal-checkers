@@ -57,23 +57,38 @@ void print_board(board* game_board) {
 
 }
 
-// // Preenche board com peças
-// void fill_board(char** board) {
-//     // Coloca peças pretas
-//     for (int line = 5; line > 3; line--) {
-//         int col = (line % 2 == 0) ? 0 
-//                                   : 1;
+// Preenche board com peças
+void fill_board(board* game_board) {
+
+    // Coloca peças pretas
+    for (int line = 0; line < 2; line++) {
+        int col = (line % 2 == 0) ? 1 
+                                  : 0;
         
-//         while (col <= 5) {
-//             board[line][col] = 'b';
-//             col += 2;
-//         }
-//     }
-// }
+        while (col <= 5) {
+            game_board->squares[line][col] = 'b';
+            col += 2;
+        }
+    }
+
+    int line_count = game_board->line_count;
+
+    // Coloca peças brancas
+    for (int line = line_count-1; line > line_count-3; line--) {
+        int col = (line % 2 == 0) ? 1 
+                                  : 0;
+        
+        while (col <= 5) {
+            game_board->squares[line][col] = 'w';
+            col += 2;
+        }
+    }
+}
 
 int main() {
     board* game_board = make_board(6, 6);
 
+    fill_board(game_board);
     print_board(game_board);
 
     // Libera memória ocupada pela board
