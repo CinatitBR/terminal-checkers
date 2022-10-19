@@ -3,6 +3,8 @@
     b - peça preta (black)
 
     Para casa ser disponível: ambos números são impares, ou ambos são pares.
+
+    - Peças brancas começam
 */
 
 #include <stdio.h>
@@ -55,9 +57,10 @@ void print_board(board* game_board) {
         printf("\n");
     }
 
+    printf("\n\n");
 }
 
-// Preenche board com peças
+// Preenche board com as peças brancas e pretas
 void fill_board(board* game_board) {
 
     // Coloca peças pretas
@@ -85,10 +88,23 @@ void fill_board(board* game_board) {
     }
 }
 
+// Move peça para (line1, col1)
+void move_piece(board* game_board, 
+    int line, int col, int line1, int col1) 
+{
+    char piece = game_board->squares[line][col];
+
+    game_board->squares[line][col] = '-';
+    game_board->squares[line1][col1] = piece;
+}
+
 int main() {
     board* game_board = make_board(6, 6);
 
     fill_board(game_board);
+
+    print_board(game_board);
+    move_piece(game_board, 4, 1, 3, 2);
     print_board(game_board);
 
     // Libera memória ocupada pela board
