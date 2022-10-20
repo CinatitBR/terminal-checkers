@@ -269,8 +269,8 @@ int move_piece(piece piece1, char direction)
 
 int main() {
     board* game_board = make_board(6, 6);
-    place_pieces(game_board);
 
+    place_pieces(game_board);
     print_board(game_board);
 
     while (1) {
