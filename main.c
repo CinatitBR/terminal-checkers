@@ -11,6 +11,7 @@
 
     - Peças brancas começam
     - Checar se peça virou dama
+    - Adicionar pontuação
 */
 
 #include <stdio.h>
@@ -22,6 +23,8 @@
 #define BLACK_DAME '$'
 #define RIGHT_DIRECTION 'D'
 #define LEFT_DIRECTION 'E'
+#define FRONT_DIRECTION 'F'
+#define BACK_DIRECTION 'B'
 
 typedef struct board {
     int line_count;
