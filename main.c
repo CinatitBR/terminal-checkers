@@ -185,26 +185,34 @@ int square_exists(board* game_board, square square1) {
     return 1;
 }
 
-square get_potential_next_square(piece piece1, 
+// If next square exists, assign to next_square and return 1,
+// otherwise, return 0.
+int get_next_square(piece piece1, square* next_square,
     square start_square, char direction) 
 {
-    square next_square;
+    square square1;
 
     // Peça branca, próximo movimento diminui linha
     if (piece1.type == 'w')
-        next_square.line = start_square.line - 1;
+        square1.line = start_square.line - 1;
     // Peça preta, próxima movimento aumenta linha
     else if (piece1.type == 'b') 
-        next_square.line = start_square.line + 1;
+        square1.line = start_square.line + 1;
 
     // Próximo movimento vai para direita
     if (direction == 'D')
-        next_square.col = start_square.col + 1;
+        square1.col = start_square.col + 1;
     // Próximo movimento vai para esquerda
     else if (direction == 'E')
-        next_square.col = start_square.col - 1;
+        square1.col = start_square.col - 1;
 
-    return next_square;
+    // Se square1 existe
+    if ( square_exists(piece1.game_board, square1) ) {
+        *next_square = square1;
+        return 1;
+    }
+    else 
+        return 0;
 }
 
 // Retorna 1 se movimento foi feito, e 0 caso contrário.
@@ -214,57 +222,58 @@ int move_piece(piece piece1, char direction)
     start_square.line = piece1.line;
     start_square.col = piece1.col;
 
-    square target_square = get_potential_next_square(piece1, 
-        start_square, direction);
+    square next_square1;
 
-    // Square não existe no board.
-    if ( !square_exists(piece1.game_board, target_square) )
+    // Se square não existe
+    if ( !get_next_square(piece1, 
+        &next_square1, start_square, direction) ) 
+    {
         return 0;
+    }
 
     char square_type = piece1.game_board->squares
-        [target_square.line][target_square.col];
+        [next_square1.line][next_square1.col];
 
     // Square está vazio, movimento é feito.
     if (square_type == '-') 
     {
-        make_move(piece1, target_square);
+        make_move(piece1, next_square1);
         return 1;
     }
 
     // Square tem peça aliada, movimento inválido
-    if (square_type == piece1.type)
+    else if (square_type == piece1.type)
         return 0;
     
     // Square tem peça inimiga
-    if (square_type != piece1.type) {
-        // Pega próximo square, após target
-        square next_square = get_potential_next_square(piece1, target_square, direction);
+    else if (square_type != piece1.type) {
+        // Pega próximo square, após next_square1
+        square next_square2;
 
-        // Verifica se square não existe
-        if ( !square_exists(piece1.game_board, next_square) )
+        if ( !get_next_square(piece1, 
+            &next_square2, next_square1, direction) ) 
+        {
             return 0;
-        
-        // Se square está vazio, move peça e come peça inimiga.
+        }
+
+        // Se next_square2 está vazio
         if ( piece1.game_board->squares
-            [next_square.line][next_square.col] == '-')
+            [next_square2.line][next_square2.col] == '-')
         {   
             // Come peça inimiga
             piece1.game_board->squares
-                [target_square.line][target_square.col] = '-';
+                [next_square1.line][next_square1.col] = '-';
             
-            // Move peça
-            make_move(piece1, next_square);
+            // Move peça aliada
+            make_move(piece1, next_square2);
 
             return 1;
         }
 
         // Square não está vazio, movimento inválido.
-        else {
+        else
             return 0;
-        }
     }
-    
-    // Se dois squares seguidos estão ocupados por peças inimigas
 }
 
 int main() {
