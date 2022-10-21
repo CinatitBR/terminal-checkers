@@ -177,8 +177,20 @@ void make_move(piece piece1, square target_square)
     piece1.game_board->squares
         [piece1.line][piece1.col] = '-';
 
-    piece1.game_board->squares
-        [target_square.line][target_square.col] = piece1.type;
+    // Dama branca
+    if (target_square.line == 0) { 
+        piece1.game_board->squares
+            [target_square.line][target_square.col] = WHITE_DAME;   
+    }
+    // Dama preta
+    else if (target_square.line == 5) { 
+        piece1.game_board->squares
+            [target_square.line][target_square.col] = BLACK_DAME;   
+    }
+    else {
+        piece1.game_board->squares
+            [target_square.line][target_square.col] = piece1.type;
+    }
 }
 
 // Verifica se square existe no board.
