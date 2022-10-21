@@ -10,10 +10,18 @@
     Para casa ser disponível: ambos números são impares, ou ambos são pares.
 
     - Peças brancas começam
+    - Checar se peça virou dama
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#define WHITE_STONE 'o'
+#define WHITE_DAME '0'
+#define BLACK_STONE '#'
+#define BLACK_DAME '$'
+#define RIGHT_DIRECTION 'D'
+#define LEFT_DIRECTION 'E'
 
 typedef struct board {
     int line_count;
@@ -141,7 +149,7 @@ void place_pieces(board* game_board) {
                                   : 0;
         
         while (col <= 5) {
-            game_board->squares[line][col] = 'b';
+            game_board->squares[line][col] = BLACK_STONE;
             col += 2;
         }
     }
@@ -154,7 +162,7 @@ void place_pieces(board* game_board) {
                                   : 0;
         
         while (col <= 5) {
-            game_board->squares[line][col] = 'w';
+            game_board->squares[line][col] = WHITE_STONE;
             col += 2;
         }
     }
@@ -193,17 +201,17 @@ int get_next_square(piece piece1, square* next_square,
     square square1;
 
     // Peça branca, próximo movimento diminui linha
-    if (piece1.type == 'w')
+    if (piece1.type == WHITE_STONE)
         square1.line = start_square.line - 1;
     // Peça preta, próxima movimento aumenta linha
-    else if (piece1.type == 'b') 
+    else if (piece1.type == BLACK_STONE) 
         square1.line = start_square.line + 1;
 
     // Próximo movimento vai para direita
-    if (direction == 'D')
+    if (direction == RIGHT_DIRECTION)
         square1.col = start_square.col + 1;
     // Próximo movimento vai para esquerda
-    else if (direction == 'E')
+    else if (direction == LEFT_DIRECTION)
         square1.col = start_square.col - 1;
 
     // Se square1 existe
