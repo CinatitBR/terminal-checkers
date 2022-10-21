@@ -10,14 +10,16 @@
     Para casa ser disponível: ambos números são impares, ou ambos são pares.
 
     - Peças brancas começam
-    - Checar se peça virou dama
+    - Checar se peça virou dama *
+    - Adicionar movimento frente e trás
     - Adicionar pontuação
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#define WHITE_STONE 'o'
+// #define WHITE_STONE 'o'
+#define WHITE_STONE '0'
 #define WHITE_DAME '0'
 #define BLACK_STONE '#'
 #define BLACK_DAME '$'
@@ -43,6 +45,11 @@ typedef struct square {
     int col;
     int line;
 } square;
+
+typedef struct move_coords {
+    char horizontal_direction; // Direita ou esquerda
+    char vertical_direction; // Frente ou trás
+} move_coords;
 
 piece get_piece(char line_char, char col_char, board* game_board) {
     int line, col;
@@ -299,6 +306,14 @@ int move_piece(piece piece1, char direction)
     }
 }
 
+// Limpa carácter extra que restar no buffer do scanf.
+void clear_scanf_buffer() {
+    char c;
+
+    while ( (c = getchar()) != '\n' && c != EOF ) 
+    {}
+}
+
 int main() {
     board* game_board = make_board(6, 6);
 
@@ -306,20 +321,35 @@ int main() {
     print_board(game_board);
 
     while (1) {
-        char line_char, col_char, direction;
+        char line_char, col_char;
 
-        // Pega input do usuário
-        scanf(" %c%c %c", 
-            &col_char, &line_char, &direction);
+        // Coordenadas do movimento
+        move_coords coords;
+        coords.vertical_direction = '\0'; // Frente ou trás
+
+        // Pega input: linha, coluna, direção horizontal
+        scanf(" %c%c %c", &col_char, &line_char, 
+            &coords.horizontal_direction);
 
         // Peça escolhida pelo usuário
         piece input_piece = get_piece(line_char, col_char, game_board);
 
-        // Tenta mover peça
-        if ( move_piece(input_piece, direction) )
-            print_board(game_board);
-        else
-            printf("\n\nMOVIMENTO INVALIDO\n\n");
+        // Se peça for dama
+        if ( input_piece.type == WHITE_DAME || 
+            input_piece.type == BLACK_DAME ) 
+        {
+            // Pega direção vertical
+            scanf(" %c", &coords.vertical_direction);
+        }
+
+        // Se sobrar carácter extra, remove do buffer.
+        clear_scanf_buffer();
+
+        // // Tenta mover peça
+        // if ( move_piece(input_piece, direction) )
+        //     print_board(game_board);
+        // else
+        //     printf("\n\nMOVIMENTO INVALIDO\n\n");
     }
 
     // Libera memória ocupada pela board
