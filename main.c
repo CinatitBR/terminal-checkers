@@ -26,7 +26,7 @@
 #define RIGHT_DIRECTION 'D'
 #define LEFT_DIRECTION 'E'
 #define FRONT_DIRECTION 'F'
-#define BACK_DIRECTION 'B'
+#define BACK_DIRECTION 'T'
 
 typedef struct board {
     int line_count;
@@ -218,22 +218,39 @@ int square_exists(board* game_board, square square1) {
 // If next square exists, assign to next_square and return 1,
 // otherwise, return 0.
 int get_next_square(piece piece1, square* next_square,
-    square start_square, char direction) 
+    square start_square, move_coords coords) 
 {
     square square1;
 
-    // Peça branca, próximo movimento diminui linha
-    if (piece1.type == WHITE_STONE)
-        square1.line = start_square.line - 1;
-    // Peça preta, próxima movimento aumenta linha
-    else if (piece1.type == BLACK_STONE) 
-        square1.line = start_square.line + 1;
+    int vertical_direction_factor;
+    if (coords.vertical_direction == FRONT_DIRECTION)
+        vertical_direction_factor = 1;
+    else 
+        vertical_direction_factor = -1;
+                                                       
 
-    // Próximo movimento vai para direita
-    if (direction == RIGHT_DIRECTION)
+    // --- DIREÇÃO VERTICAL ---
+
+    // Peça branca.
+    // Para frente, diminui linha.
+    // Para trás, aumenta linha.
+    if (piece1.type == WHITE_STONE)
+        square1.line = start_square.line + (-1 * vertical_direction_factor);
+    
+    // Peça preta.
+    // Para frente, aumenta linha.
+    // Para trás, diminui linha.
+    else if (piece1.type == BLACK_STONE) 
+        square1.line = start_square.line + (vertical_direction_factor);
+
+    // --- DIREÇÃO HORIZONTAL ---
+
+    //  Movimento vai para direita, aumenta coluna.
+    if (coords.horizontal_direction == RIGHT_DIRECTION)
         square1.col = start_square.col + 1;
-    // Próximo movimento vai para esquerda
-    else if (direction == LEFT_DIRECTION)
+
+    // Movimento vai para esquerda, diminui coluna.
+    else if (coords.horizontal_direction == LEFT_DIRECTION)
         square1.col = start_square.col - 1;
 
     // Se square1 existe
@@ -246,7 +263,7 @@ int get_next_square(piece piece1, square* next_square,
 }
 
 // Retorna 1 se movimento foi feito, e 0 caso contrário.
-int move_piece(piece piece1, char direction) 
+int move_piece(piece piece1, move_coords coords) 
 {
     square start_square;
     start_square.line = piece1.line;
@@ -256,7 +273,7 @@ int move_piece(piece piece1, char direction)
 
     // Se square não existe
     if ( !get_next_square(piece1, 
-        &next_square1, start_square, direction) ) 
+        &next_square1, start_square, coords) ) 
     {
         return 0;
     }
@@ -281,7 +298,7 @@ int move_piece(piece piece1, char direction)
         square next_square2;
 
         if ( !get_next_square(piece1, 
-            &next_square2, next_square1, direction) ) 
+            &next_square2, next_square1, coords) ) 
         {
             return 0;
         }
@@ -325,7 +342,7 @@ int main() {
 
         // Coordenadas do movimento
         move_coords coords;
-        coords.vertical_direction = '\0'; // Frente ou trás
+        coords.vertical_direction = FRONT_DIRECTION; // Frente ou trás
 
         // Pega input: linha, coluna, direção horizontal
         scanf(" %c%c %c", &col_char, &line_char, 
@@ -345,11 +362,11 @@ int main() {
         // Se sobrar carácter extra, remove do buffer.
         clear_scanf_buffer();
 
-        // // Tenta mover peça
-        // if ( move_piece(input_piece, direction) )
-        //     print_board(game_board);
-        // else
-        //     printf("\n\nMOVIMENTO INVALIDO\n\n");
+        // Tenta mover peça
+        if ( move_piece(input_piece, coords) )
+            print_board(game_board);
+        else
+            printf("\n\nMOVIMENTO INVALIDO\n\n");
     }
 
     // Libera memória ocupada pela board
