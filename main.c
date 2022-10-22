@@ -13,13 +13,15 @@
     - Checar se peça virou dama *
     - Adicionar movimento frente e trás
     - Adicionar pontuação
+
+    - Fix get_next_square for dames
+    - Adicionar cheque de peça dentro de get_piece.
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-// #define WHITE_STONE 'o'
-#define WHITE_STONE '0'
+#define WHITE_STONE 'o'
 #define WHITE_DAME '0'
 #define BLACK_STONE '#'
 #define BLACK_DAME '$'
@@ -222,26 +224,32 @@ int get_next_square(piece piece1, square* next_square,
 {
     square square1;
 
-    int vertical_direction_factor;
-    if (coords.vertical_direction == FRONT_DIRECTION)
-        vertical_direction_factor = 1;
-    else 
-        vertical_direction_factor = -1;
-                                                       
-
     // --- DIREÇÃO VERTICAL ---
 
     // Peça branca.
     // Para frente, diminui linha.
     // Para trás, aumenta linha.
-    if (piece1.type == WHITE_STONE)
-        square1.line = start_square.line + (-1 * vertical_direction_factor);
+    if (piece1.type == WHITE_STONE || piece1.type == WHITE_DAME) {
+        // square1.line = start_square.line + (-1 * vertical_direction_factor);
+
+        if (coords.vertical_direction == FRONT_DIRECTION)
+            square1.line = start_square.line - 1;
+        else 
+            square1.line = start_square.line + 1;
+
+    }
     
     // Peça preta.
     // Para frente, aumenta linha.
     // Para trás, diminui linha.
-    else if (piece1.type == BLACK_STONE) 
-        square1.line = start_square.line + (vertical_direction_factor);
+    else if (piece1.type == BLACK_STONE || piece1.type == BLACK_DAME)  {
+
+        if (coords.vertical_direction == FRONT_DIRECTION)
+            square1.line = start_square.line + 1;
+        else 
+            square1.line = start_square.line - 1;
+
+    }
 
     // --- DIREÇÃO HORIZONTAL ---
 
@@ -375,8 +383,14 @@ int main() {
         // Peça escolhida pelo usuário
         piece input_piece = get_piece(line_char, col_char, game_board);
 
+        // Se peça é vazia, movimento inválido.
+        if (input_piece.type == '-') {
+            printf("\n\nMOVIMENTO INVALIDO\n\n");
+            continue;
+        }
+
         // Se peça for dama
-        if ( input_piece.type == WHITE_DAME || 
+        else if ( input_piece.type == WHITE_DAME || 
             input_piece.type == BLACK_DAME ) 
         {
             // Pega direção vertical
