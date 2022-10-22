@@ -262,6 +262,33 @@ int get_next_square(piece piece1, square* next_square,
         return 0;
 }
 
+int is_piece_ally(char type1, char type2) {
+
+    if ( type1 == WHITE_STONE 
+        || type1 == WHITE_DAME) 
+    {
+
+        if ( type2 == WHITE_STONE ||
+            type2 == WHITE_DAME) {
+            return 1;
+        }   
+
+    }
+
+    else if ( type1 == BLACK_STONE 
+        || type1 == BLACK_DAME) 
+    {
+
+        if ( type2 == BLACK_STONE ||
+            type2 == BLACK_DAME) {
+            return 1;
+        }   
+
+    }
+
+    return 0;
+}
+
 // Retorna 1 se movimento foi feito, e 0 caso contrário.
 int move_piece(piece piece1, move_coords coords) 
 {
@@ -288,39 +315,36 @@ int move_piece(piece piece1, move_coords coords)
         return 1;
     }
 
-    // Square tem peça aliada, movimento inválido
-    else if (square_type == piece1.type)
+    // Square tem peça aliada, movimento inválido. 
+    if ( is_piece_ally(piece1.type, square_type) )
         return 0;
     
-    // Square tem peça inimiga
-    else if (square_type != piece1.type) {
-        // Pega próximo square, após next_square1
-        square next_square2;
+    // Pega próximo square, após next_square1
+    square next_square2;
 
-        if ( !get_next_square(piece1, 
-            &next_square2, next_square1, coords) ) 
-        {
-            return 0;
-        }
-
-        // Se next_square2 está vazio
-        if ( piece1.game_board->squares
-            [next_square2.line][next_square2.col] == '-')
-        {   
-            // Come peça inimiga
-            piece1.game_board->squares
-                [next_square1.line][next_square1.col] = '-';
-            
-            // Move peça aliada
-            make_move(piece1, next_square2);
-
-            return 1;
-        }
-
-        // Square não está vazio, movimento inválido.
-        else
-            return 0;
+    if ( !get_next_square(piece1, 
+        &next_square2, next_square1, coords) ) 
+    {
+        return 0;
     }
+
+    // Se next_square2 está vazio
+    if ( piece1.game_board->squares
+        [next_square2.line][next_square2.col] == '-')
+    {   
+        // Come peça inimiga
+        piece1.game_board->squares
+            [next_square1.line][next_square1.col] = '-';
+        
+        // Move peça aliada
+        make_move(piece1, next_square2);
+
+        return 1;
+    }
+
+    // Square não está vazio, movimento inválido.
+    else
+        return 0;
 }
 
 // Limpa carácter extra que restar no buffer do scanf.
