@@ -399,7 +399,6 @@ int main() {
     enum Players current_player = WHITE_PLAYER;
 
     place_pieces(game_board);
-    // print_board(game_board);
 
     while (1) {
         char line_char, col_char;
