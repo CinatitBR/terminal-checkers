@@ -23,12 +23,19 @@
 
 #define WHITE_STONE 'o'
 #define WHITE_DAME '0'
+
 #define BLACK_STONE '#'
 #define BLACK_DAME '$'
+
 #define RIGHT_DIRECTION 'D'
 #define LEFT_DIRECTION 'E'
 #define FRONT_DIRECTION 'F'
 #define BACK_DIRECTION 'T'
+
+enum Players {
+    WHITE_PLAYER,
+    BLACK_PLAYER
+};
 
 typedef struct board {
     int line_count;
@@ -363,11 +370,36 @@ void clear_scanf_buffer() {
     {}
 }
 
+// Verifica se peça é do jogador.
+int is_piece_from_player(piece piece1, enum Players player) {
+
+    // Peça é do player branco
+    if (piece1.type == WHITE_STONE
+        || piece1.type == WHITE_DAME) {
+        
+        if (player != WHITE_PLAYER)
+            return 0;
+
+    }
+
+    // Peça é do player preto
+    else if (piece1.type == BLACK_STONE
+        || piece1.type == BLACK_DAME) {
+        
+        if (player != BLACK_PLAYER)
+            return 0;
+
+    }
+
+    return 1;
+}
+
 int main() {
     board* game_board = make_board(6, 6);
+    enum Players current_player = WHITE_PLAYER;
 
     place_pieces(game_board);
-    print_board(game_board);
+    // print_board(game_board);
 
     while (1) {
         char line_char, col_char;
@@ -375,6 +407,10 @@ int main() {
         // Coordenadas do movimento
         move_coords coords;
         coords.vertical_direction = FRONT_DIRECTION; // Frente ou trás
+
+        if (current_player == WHITE_PLAYER) printf("Player atual: branco\n");
+        else printf("Player atual: preto\n");
+        print_board(game_board);
 
         // Pega input: linha, coluna, direção horizontal
         scanf(" %c%c %c", &col_char, &line_char, 
@@ -389,8 +425,14 @@ int main() {
             continue;
         }
 
+        // Verifica se peça é do player jogando esse turno.
+        if ( !is_piece_from_player(input_piece, current_player) ) {
+            printf("\n\nMOVIMENTO INVALIDO\n\n");
+            continue;
+        }
+
         // Se peça for dama
-        else if ( input_piece.type == WHITE_DAME || 
+        if ( input_piece.type == WHITE_DAME || 
             input_piece.type == BLACK_DAME ) 
         {
             // Pega direção vertical
@@ -401,8 +443,14 @@ int main() {
         clear_scanf_buffer();
 
         // Tenta mover peça
-        if ( move_piece(input_piece, coords) )
+        if ( move_piece(input_piece, coords) ) {
             print_board(game_board);
+
+            // Atualiza jogador do próximo turno.
+            current_player = current_player == WHITE_PLAYER ?
+                BLACK_PLAYER :
+                WHITE_PLAYER;
+        }
         else
             printf("\n\nMOVIMENTO INVALIDO\n\n");
     }
