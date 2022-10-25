@@ -40,6 +40,8 @@ enum Players {
 typedef struct board {
     int line_count;
     int col_count;
+    int white_piece_count;
+    int black_piece_count;
     char** squares;
 } board;
 
@@ -159,7 +161,7 @@ void print_board(board* game_board) {
     printf("\n\n");
 }
 
-// Preenche board com as peças brancas e pretas
+// Preenche board com as peças brancas e pretas.
 void place_pieces(board* game_board) {
 
     // Coloca peças pretas
@@ -174,6 +176,7 @@ void place_pieces(board* game_board) {
     }
 
     int line_count = game_board->line_count;
+    int player_piece_count = 0;
 
     // Coloca peças brancas
     for (int line = line_count-1; line > line_count-3; line--) {
@@ -183,8 +186,13 @@ void place_pieces(board* game_board) {
         while (col <= 5) {
             game_board->squares[line][col] = WHITE_STONE;
             col += 2;
+
+            player_piece_count++;
         }
     }
+
+    game_board->white_piece_count = player_piece_count;
+    game_board->black_piece_count = player_piece_count;
 }
 
 // Move peça para target_square
