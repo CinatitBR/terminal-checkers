@@ -355,9 +355,14 @@ int move_piece(piece piece1, move_coords coords)
     if ( piece1.game_board->squares
         [next_square2.line][next_square2.col] == '-')
     {   
-        // Come peça inimiga
+        // --- Come peça inimiga ---
         piece1.game_board->squares
             [next_square1.line][next_square1.col] = '-';
+
+        if (piece1.type == WHITE_STONE || piece1.type == WHITE_DAME)
+            piece1.game_board->black_piece_count -= 1;
+        else 
+            piece1.game_board->white_piece_count -= 1;
         
         // Move peça aliada
         make_move(piece1, next_square2);
@@ -410,6 +415,15 @@ int main() {
 
     while (1) {
         char line_char, col_char;
+
+        if (game_board->white_piece_count == 0) {
+            printf("JOGADOR 2 VENCEU\n");
+            break;
+        }
+        else if (game_board->black_piece_count == 0) {
+            printf("JOGADOR 1 VENCEU\n");
+            break;
+        }
 
         // Coordenadas do movimento
         move_coords coords;
@@ -464,4 +478,6 @@ int main() {
 
     // Libera memória ocupada pela board
     destroy_board(game_board);
+
+    return 0;
 }
