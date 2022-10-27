@@ -44,6 +44,7 @@ typedef struct board {
     int black_piece_count;
     int white_invalid_move_count;
     int black_invalid_move_count;
+    int no_piece_captured_count;
     char** squares;
 } board;
 
@@ -336,10 +337,18 @@ int move_piece(piece piece1, move_coords coords)
         [next_square1.line][next_square1.col];
 
     // Square está vazio, movimento é feito.
+    // Nenhuma peça inimiga capturada.
     if (square_type == '-') 
     {
         make_move(piece1, next_square1);
+
+        // Nenhuma peça foi capturada. Incrementa valor.
+        piece1.game_board->no_piece_captured_count += 1;
+
         return 1;
+    }
+    else {
+        piece1.game_board->no_piece_captured_count = 0;
     }
 
     // Square tem peça aliada, movimento inválido. 
@@ -349,6 +358,7 @@ int move_piece(piece piece1, move_coords coords)
     // Pega próximo square, após next_square1
     square next_square2;
 
+    // Square não existe.
     if ( !get_next_square(piece1, 
         &next_square2, next_square1, coords) ) 
     {
@@ -419,6 +429,13 @@ int main() {
 
     while (1) {
         char line_char, col_char;
+
+        // 6 jogadas seguidas sem nenhuma peça capturada. 
+        // Empate.
+        if ( game_board->no_piece_captured_count >= 6 ) {
+            printf("EMPATE\n");
+            break;
+        }
 
         // 3 movimentos inválidos seguidos, outro jogador vence.
         if ( game_board->white_invalid_move_count >= 3 ) {
