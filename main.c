@@ -42,6 +42,8 @@ typedef struct board {
     int col_count;
     int white_piece_count;
     int black_piece_count;
+    int white_invalid_move_count;
+    int black_invalid_move_count;
     char** squares;
 } board;
 
@@ -137,6 +139,8 @@ board* make_board(int l, int c) {
     game_board->line_count = l;
     game_board->col_count = c;
     game_board->squares = lines;
+    game_board->white_invalid_move_count = 0;
+    game_board->black_invalid_move_count = 0;
 
     return game_board;
 }
@@ -321,7 +325,7 @@ int move_piece(piece piece1, move_coords coords)
 
     square next_square1;
 
-    // Se square não existe
+    // Se square não existe.
     if ( !get_next_square(piece1, 
         &next_square1, start_square, coords) ) 
     {
@@ -416,6 +420,16 @@ int main() {
     while (1) {
         char line_char, col_char;
 
+        // 3 movimentos inválidos seguidos, outro jogador vence.
+        if ( game_board->white_invalid_move_count >= 3 ) {
+            printf("JOGADOR 2 VENCEU\n");
+            break;
+        }
+        else if ( game_board->black_invalid_move_count >= 3 ) {
+            printf("JOGADOR 1 VENCEU\n");
+            break;
+        }
+
         if (game_board->white_piece_count == 0) {
             printf("JOGADOR 2 VENCEU\n");
             break;
@@ -443,12 +457,25 @@ int main() {
         // Se peça é vazia, movimento inválido.
         if (input_piece.type == '-') {
             printf("\n\nMOVIMENTO INVALIDO\n\n");
+
+            // Incrementa contagem do movimento inválido.
+            if (current_player == WHITE_PLAYER)
+                game_board->white_invalid_move_count += 1;
+            else 
+                game_board->black_invalid_move_count += 1;
+
             continue;
         }
 
         // Verifica se peça é do player jogando esse turno.
         if ( !is_piece_from_player(input_piece, current_player) ) {
             printf("\n\nMOVIMENTO INVALIDO\n\n");
+
+            if (current_player == WHITE_PLAYER)
+                game_board->white_invalid_move_count += 1;
+            else 
+                game_board->black_invalid_move_count += 1;
+
             continue;
         }
 
@@ -471,9 +498,18 @@ int main() {
             current_player = current_player == WHITE_PLAYER ?
                 BLACK_PLAYER :
                 WHITE_PLAYER;
+
+            game_board->white_invalid_move_count = 0;
+            game_board->black_invalid_move_count = 0;
         }
-        else
+        else {
             printf("\n\nMOVIMENTO INVALIDO\n\n");
+
+            if (current_player == WHITE_PLAYER)
+                game_board->white_invalid_move_count += 1;
+            else 
+                game_board->black_invalid_move_count += 1;
+        }
     }
 
     // Libera memória ocupada pela board
