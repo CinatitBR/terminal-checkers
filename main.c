@@ -376,7 +376,7 @@ int move_piece(piece piece1, move_coords coords)
 
         if (piece1.type == WHITE_STONE || piece1.type == WHITE_DAME)
             piece1.game_board->black_piece_count -= 1;
-        else 
+        else if (piece1.type == BLACK_STONE || piece1.type == BLACK_DAME)
             piece1.game_board->white_piece_count -= 1;
         
         // Move peça aliada
@@ -432,6 +432,8 @@ int main() {
     while (1) {
         char line_char, col_char;
 
+        // print_board(game_board);
+
         // 6 jogadas seguidas sem nenhuma peça capturada. 
         // Empate.
         if ( game_board->no_piece_captured_count >= 6 ) {
@@ -472,6 +474,7 @@ int main() {
         // Se peça é vazia, movimento inválido.
         if (input_piece.type == '-') {
             printf("\n\nMOVIMENTO INVALIDO\n\n");
+            // print_board(game_board);
 
             // Incrementa contagem do movimento inválido.
             if (current_player == WHITE_PLAYER)
@@ -485,6 +488,7 @@ int main() {
         // Verifica se peça é do player jogando esse turno.
         if ( !is_piece_from_player(input_piece, current_player) ) {
             printf("\n\nMOVIMENTO INVALIDO\n\n");
+            // print_board(game_board);
 
             if (current_player == WHITE_PLAYER)
                 game_board->white_invalid_move_count += 1;
@@ -525,10 +529,11 @@ int main() {
             else 
                 game_board->black_invalid_move_count += 1;
         }
+
     }
 
     // Libera memória ocupada pela board
-    destroy_board(game_board);
+    // destroy_board(game_board);
 
     return 0;
 }
