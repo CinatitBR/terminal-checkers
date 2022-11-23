@@ -427,6 +427,7 @@ int main() {
     enum Players current_player = WHITE_PLAYER;
 
     place_pieces(game_board);
+    print_board(game_board);
 
     while (1) {
         char line_char, col_char;
@@ -460,8 +461,6 @@ int main() {
         // Coordenadas do movimento
         move_coords coords;
         coords.vertical_direction = FRONT_DIRECTION; // Frente ou trás
-
-        print_board(game_board);
 
         // Pega input: linha, coluna, direção horizontal
         scanf(" %c%c %c", &col_char, &line_char, 
