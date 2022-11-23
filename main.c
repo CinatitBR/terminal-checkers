@@ -22,10 +22,10 @@
 #include <stdlib.h>
 
 #define WHITE_STONE 'o'
-#define WHITE_DAME '0'
+#define WHITE_DAME 'O'
 
 #define BLACK_STONE '#'
-#define BLACK_DAME '$'
+#define BLACK_DAME 'X'
 
 #define RIGHT_DIRECTION 'D'
 #define LEFT_DIRECTION 'E'
@@ -142,6 +142,7 @@ board* make_board(int l, int c) {
     game_board->squares = lines;
     game_board->white_invalid_move_count = 0;
     game_board->black_invalid_move_count = 0;
+    game_board->no_piece_captured_count = 0;
 
     return game_board;
 }
@@ -460,8 +461,6 @@ int main() {
         move_coords coords;
         coords.vertical_direction = FRONT_DIRECTION; // Frente ou trás
 
-        if (current_player == WHITE_PLAYER) printf("Player atual: branco\n");
-        else printf("Player atual: preto\n");
         print_board(game_board);
 
         // Pega input: linha, coluna, direção horizontal
