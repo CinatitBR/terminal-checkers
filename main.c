@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #define WHITE_STONE 'o'
-#define WHITE_DAME 'O'
+#define WHITE_DAME '0'
 
 #define BLACK_STONE '#'
 #define BLACK_DAME 'X'
@@ -533,7 +533,7 @@ int main() {
     }
 
     // Libera memória ocupada pela board
-    // destroy_board(game_board);
+    destroy_board(game_board);
 
     return 0;
 }
