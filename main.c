@@ -154,6 +154,7 @@ void destroy_board(board* game_board) {
 }
 
 void print_board(board* game_board) {
+    printf("\n");
 
     for (int i = 0; i < game_board->line_count; i++) {
 
@@ -164,7 +165,7 @@ void print_board(board* game_board) {
         printf("\n");
     }
 
-    printf("\n\n");
+    printf("\n");
 }
 
 // Preenche board com as peças brancas e pretas.
@@ -473,8 +474,8 @@ int main() {
 
         // Se peça é vazia, movimento inválido.
         if (input_piece.type == '-') {
-            printf("\n\nMOVIMENTO INVALIDO\n\n");
-            // print_board(game_board);
+            printf("MOVIMENTO INVALIDO\n");
+            print_board(game_board);
 
             // Incrementa contagem do movimento inválido.
             if (current_player == WHITE_PLAYER)
@@ -487,8 +488,8 @@ int main() {
 
         // Verifica se peça é do player jogando esse turno.
         if ( !is_piece_from_player(input_piece, current_player) ) {
-            printf("\n\nMOVIMENTO INVALIDO\n\n");
-            // print_board(game_board);
+            printf("MOVIMENTO INVALIDO");
+            print_board(game_board);
 
             if (current_player == WHITE_PLAYER)
                 game_board->white_invalid_move_count += 1;
@@ -511,7 +512,6 @@ int main() {
 
         // Tenta mover peça
         if ( move_piece(input_piece, coords) ) {
-            print_board(game_board);
 
             // Atualiza jogador do próximo turno.
             current_player = current_player == WHITE_PLAYER ?
@@ -522,13 +522,15 @@ int main() {
             game_board->black_invalid_move_count = 0;
         }
         else {
-            printf("\n\nMOVIMENTO INVALIDO\n\n");
+            printf("MOVIMENTO INVALIDO");
 
             if (current_player == WHITE_PLAYER)
                 game_board->white_invalid_move_count += 1;
             else 
                 game_board->black_invalid_move_count += 1;
         }
+
+        print_board(game_board);
 
     }
 
