@@ -21,6 +21,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define LINE_COUNT 8
+#define COL_COUNT 8
+
 #define WHITE_STONE 'o'
 #define WHITE_DAME '0'
 
@@ -172,25 +175,24 @@ void print_board(board* game_board) {
 void place_pieces(board* game_board) {
 
     // Coloca peças pretas
-    for (int line = 0; line < 2; line++) {
+    for (int line = 0; line < 3; line++) {
         int col = (line % 2 == 0) ? 1 
                                   : 0;
         
-        while (col <= 5) {
+        while (col < COL_COUNT) {
             game_board->squares[line][col] = BLACK_STONE;
             col += 2;
         }
     }
 
-    int line_count = game_board->line_count;
     int player_piece_count = 0;
 
     // Coloca peças brancas
-    for (int line = line_count-1; line > line_count-3; line--) {
+    for (int line = LINE_COUNT-1; line > LINE_COUNT-4; line--) {
         int col = (line % 2 == 0) ? 1 
                                   : 0;
         
-        while (col <= 5) {
+        while (col < COL_COUNT) {
             game_board->squares[line][col] = WHITE_STONE;
             col += 2;
 
@@ -424,7 +426,7 @@ int is_piece_from_player(piece piece1, enum Players player) {
 }
 
 int main() {
-    board* game_board = make_board(6, 6);
+    board* game_board = make_board(LINE_COUNT, COL_COUNT);
     enum Players current_player = WHITE_PLAYER;
 
     place_pieces(game_board);
