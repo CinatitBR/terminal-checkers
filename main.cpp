@@ -125,8 +125,8 @@ piece get_piece(char line_char, char col_char, board* game_board) {
 
 board* make_board(int l, int c) {
     
-    char* board_values = calloc(l*c, sizeof(char));
-    char** lines = malloc(l * sizeof(char*));
+    char* board_values = (char*)calloc(l*c, sizeof(char));
+    char** lines = (char**)malloc(l * sizeof(char*));
 
     for (int i = 0; i < l; i++) {
         lines[i] = board_values + i*c;
@@ -139,7 +139,7 @@ board* make_board(int l, int c) {
         }
     }
 
-    board* game_board = malloc(sizeof(board));
+    board* game_board = (board*)malloc(sizeof(board));
     game_board->line_count = l;
     game_board->col_count = c;
     game_board->squares = lines;

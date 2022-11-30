@@ -1,5 +1,5 @@
-all: main.c
-	gcc main.c -o main.out
+all: main.cpp
+	g++ main.cpp -o main.out
 	./main.out
 
 clean: 
