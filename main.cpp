@@ -123,10 +123,11 @@ piece get_piece(char line_char, char col_char, board* game_board) {
     return new_piece;
 }
 
+// *
 board* make_board(int l, int c) {
     
-    char* board_values = (char*)calloc(l*c, sizeof(char));
-    char** lines = (char**)malloc(l * sizeof(char*));
+    char* board_values = (char*) calloc(l*c, sizeof(char));
+    char** lines = (char**) malloc(l * sizeof(char*));
 
     for (int i = 0; i < l; i++) {
         lines[i] = board_values + i*c;
@@ -150,12 +151,14 @@ board* make_board(int l, int c) {
     return game_board;
 }
 
+// *
 void destroy_board(board* game_board) {
     free(*game_board->squares); 
     free(game_board->squares); 
     free(game_board);
 }
 
+// *
 void print_board(board* game_board) {
     printf("\n");
 
@@ -171,6 +174,7 @@ void print_board(board* game_board) {
     printf("\n");
 }
 
+// *
 // Preenche board com as peças brancas e pretas.
 void place_pieces(board* game_board) {
 
@@ -226,6 +230,7 @@ void make_move(piece piece1, square target_square)
     }
 }
 
+// 
 // Verifica se square existe no board.
 // Retorna 1 para sim, 0 para não.
 int square_exists(board* game_board, square square1) {
