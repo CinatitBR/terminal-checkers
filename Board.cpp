@@ -1,6 +1,7 @@
 #include "Board.hpp"
 #include <iostream>
 #include <cstdlib>
+#include "BoardSquare.hpp"
 
 #define LINE_COUNT 8
 #define COL_COUNT 8
@@ -60,6 +61,20 @@ void Board::print() {
     }
 
     std::cout << "\n";
+}
+
+bool Board::square_exists(BoardSquare square1) {
+    // Linha ou coluna não existem
+    if (square1.line < 0 || square1.col < 0)
+        return false;
+
+    else if (square1.line > _line_count-1)
+        return false;
+
+    else if (square1.col > _col_count-1)
+        return false;
+
+    return true;
 }
 
 void Board::set_white_piece_count(int white_piece_count) {

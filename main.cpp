@@ -58,6 +58,7 @@ typedef struct piece {
     board* game_board;
 } piece;
 
+// *
 typedef struct square {
     int col;
     int line;
@@ -230,7 +231,7 @@ void make_move(piece piece1, square target_square)
     }
 }
 
-// 
+// *
 // Verifica se square existe no board.
 // Retorna 1 para sim, 0 para não.
 int square_exists(board* game_board, square square1) {

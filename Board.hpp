@@ -2,6 +2,7 @@
 #define BOARD_HPP  
 
 #include <cstdlib>
+#include "BoardSquare.hpp"
 
 class Board {
 
@@ -10,6 +11,8 @@ public:
     ~Board();
 
     void print();
+    bool square_exists(BoardSquare square1);
+    void make_move();
 
     void set_white_piece_count(int white_piece_count);
     int get_white_piece_count();
