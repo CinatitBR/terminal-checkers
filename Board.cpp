@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "BoardSquare.hpp"
+#include "Piece.hpp"
 
 #define LINE_COUNT 8
 #define COL_COUNT 8
@@ -144,4 +145,27 @@ void Board::place_pieces() {
 
     _white_piece_count = player_piece_count;
     _black_piece_count = player_piece_count;
+}
+
+void Board::make_move(Piece piece1, BoardSquare targetSquare) {
+    piece1.gameBoard->_squares
+        [piece1.line][piece1.col] = '-';
+
+    // Come peça inimiga e vira Dama branca
+    if (targetSquare.line == 0) { 
+        piece1.gameBoard->_squares
+            [targetSquare.line][targetSquare.col] = WHITE_DAME;   
+    }
+
+    // Come peça inimiga e vira Dama preta
+    else if (targetSquare.line == 5) { 
+        piece1.gameBoard->_squares
+            [targetSquare.line][targetSquare.col] = BLACK_DAME;   
+    }
+
+    // Come peça inimiga
+    else {
+        piece1.gameBoard->_squares
+            [targetSquare.line][targetSquare.col] = piece1.type;
+    }
 }

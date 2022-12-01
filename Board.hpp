@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include "BoardSquare.hpp"
+#include "Piece.hpp"
 
 class Board {
 
@@ -12,7 +13,7 @@ public:
 
     void print();
     bool square_exists(BoardSquare square1);
-    void make_move();
+    bool move_piece(piece piece1, move_coords coords);
 
     void set_white_piece_count(int white_piece_count);
     int get_white_piece_count();
@@ -41,6 +42,7 @@ private:
     int _no_piece_captured_count;
 
     void place_pieces();
+    void make_move(Piece piece1, BoardSquare targetSquare);
 };
 
 #endif
