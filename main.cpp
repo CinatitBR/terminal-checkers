@@ -21,8 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define LINE_COUNT 8
-#define COL_COUNT 8
+#define LINE_COUNT 6
+#define COL_COUNT 6
 
 #define WHITE_STONE 'o'
 #define WHITE_DAME '0'
@@ -40,6 +40,7 @@ enum Players {
     BLACK_PLAYER
 };
 
+// *
 typedef struct board {
     int line_count;
     int col_count;
@@ -51,6 +52,7 @@ typedef struct board {
     char** squares;
 } board;
 
+// *
 typedef struct piece {
     char type;
     int line;
@@ -64,6 +66,7 @@ typedef struct square {
     int line;
 } square;
 
+// *
 typedef struct move_coords {
     char horizontal_direction; // Direita ou esquerda
     char vertical_direction; // Frente ou trás
@@ -180,7 +183,7 @@ void print_board(board* game_board) {
 void place_pieces(board* game_board) {
 
     // Coloca peças pretas
-    for (int line = 0; line < 3; line++) {
+    for (int line = 0; line < 2; line++) {
         int col = (line % 2 == 0) ? 1 
                                   : 0;
         
@@ -193,7 +196,7 @@ void place_pieces(board* game_board) {
     int player_piece_count = 0;
 
     // Coloca peças brancas
-    for (int line = LINE_COUNT-1; line > LINE_COUNT-4; line--) {
+    for (int line = LINE_COUNT-1; line > LINE_COUNT-3; line--) {
         int col = (line % 2 == 0) ? 1 
                                   : 0;
         
@@ -209,6 +212,7 @@ void place_pieces(board* game_board) {
     game_board->black_piece_count = player_piece_count;
 }
 
+// *
 // Move peça para target_square
 void make_move(piece piece1, square target_square) 
 {
@@ -247,6 +251,7 @@ int square_exists(board* game_board, square square1) {
     return 1;
 }
 
+// *
 // If next square exists, assign to next_square and return 1,
 // otherwise, return 0.
 int get_next_square(piece piece1, square* next_square,
@@ -300,6 +305,7 @@ int get_next_square(piece piece1, square* next_square,
         return 0;
 }
 
+// *
 int is_piece_ally(char type1, char type2) {
 
     if ( type1 == WHITE_STONE 
@@ -327,6 +333,7 @@ int is_piece_ally(char type1, char type2) {
     return 0;
 }
 
+// *
 // Retorna 1 se movimento foi feito, e 0 caso contrário.
 int move_piece(piece piece1, move_coords coords) 
 {
@@ -407,6 +414,7 @@ void clear_scanf_buffer() {
     {}
 }
 
+// *
 // Verifica se peça é do jogador.
 int is_piece_from_player(piece piece1, enum Players player) {
 
@@ -468,6 +476,11 @@ int main() {
             printf("JOGADOR 1 VENCEU\n");
             break;
         }
+
+        if (current_player == WHITE_PLAYER)
+            printf("Player atual: Branco\n");
+        else if (current_player == BLACK_PLAYER)
+            printf("Player atual: Preto\n");
 
         // Coordenadas do movimento
         move_coords coords;

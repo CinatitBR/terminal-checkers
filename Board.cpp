@@ -1,47 +1,37 @@
-#include "Board.hpp"
 #include <iostream>
 #include <cstdlib>
+
+#include "Board.hpp"
 #include "BoardSquare.hpp"
 #include "Piece.hpp"
-
-#define LINE_COUNT 8
-#define COL_COUNT 8
-
-#define WHITE_STONE 'o'
-#define WHITE_DAME '0'
-
-#define BLACK_STONE '#'
-#define BLACK_DAME 'X'
-
-#define RIGHT_DIRECTION 'D'
-#define LEFT_DIRECTION 'E'
-#define FRONT_DIRECTION 'F'
-#define BACK_DIRECTION 'T'
+#include "MovementCoords.hpp"
 
 Board::Board(int line_count, int col_count) : 
-    _line_count{line_count},
-    _col_count{col_count},
-    _white_piece_count{0},
-    _black_piece_count{0},
-    _white_invalid_move_count{0},
-    _black_invalid_move_count{0},
-    _no_piece_captured_count{0}
+    line_count{line_count},
+    col_count{col_count},
+    white_piece_count{0},
+    black_piece_count{0},
+    white_invalid_move_count{0},
+    black_invalid_move_count{0},
+    no_piece_captured_count{0}
 {
-    char* board_values = (char*) calloc(_line_count * _col_count, sizeof(char));
-    char** lines = (char**) malloc(_line_count * sizeof(char*));
+    char* board_values = (char*) calloc(line_count * col_count, sizeof(char));
+    char** lines = (char**) malloc(line_count * sizeof(char*));
 
-    for (int i = 0; i < _line_count; i++) {
-        lines[i] = board_values + i * _col_count;
+    for (int i = 0; i < line_count; i++) {
+        lines[i] = board_values + i * col_count;
     }
 
     // Preenche board com '-'
-    for (int i = 0; i < _line_count; i++) {
-        for (int j = 0; j < _col_count; j++) {
+    for (int i = 0; i < line_count; i++) {
+        for (int j = 0; j < col_count; j++) {
             lines[i][j] = '-';
         }
     }
 
     _squares = lines;
+
+    place_pieces();
 }
 
 Board::~Board() {
@@ -52,9 +42,9 @@ Board::~Board() {
 void Board::print() {
     std::cout << "\n";
 
-    for (int i = 0; i < _line_count; i++) {
+    for (int i = 0; i < line_count; i++) {
 
-        for (int j = 0; j < _col_count; j++) {
+        for (int j = 0; j < col_count; j++) {
             std::cout << _squares[i][j];
         }
 
@@ -69,53 +59,164 @@ bool Board::square_exists(BoardSquare square1) {
     if (square1.line < 0 || square1.col < 0)
         return false;
 
-    else if (square1.line > _line_count-1)
+    else if (square1.line > line_count-1)
         return false;
 
-    else if (square1.col > _col_count-1)
+    else if (square1.col > col_count-1)
         return false;
 
     return true;
 }
 
-void Board::set_white_piece_count(int white_piece_count) {
-    _white_piece_count = white_piece_count;
+bool Board::get_next_square(
+    Piece piece1, 
+    BoardSquare* next_square, 
+    BoardSquare start_square, 
+    MovementCoords coords
+) 
+{
+    BoardSquare square1;
+
+    // --- DIREÇÃO VERTICAL ---
+
+    // Peça branca.
+    // Para frente, diminui linha.
+    // Para trás, aumenta linha.
+    if (piece1.type == WHITE_STONE || piece1.type == WHITE_DAME) {
+        // square1.line = start_square.line + (-1 * vertical_direction_factor);
+
+        if (coords.verticalDirection == FRONT_DIRECTION)
+            square1.line = start_square.line - 1;
+        else 
+            square1.line = start_square.line + 1;
+
+    }
+    
+    // Peça preta.
+    // Para frente, aumenta linha.
+    // Para trás, diminui linha.
+    else if (piece1.type == BLACK_STONE || piece1.type == BLACK_DAME)  {
+
+        if (coords.verticalDirection == FRONT_DIRECTION)
+            square1.line = start_square.line + 1;
+        else 
+            square1.line = start_square.line - 1;
+
+    }
+
+    // --- DIREÇÃO HORIZONTAL ---
+
+    //  Movimento vai para direita, aumenta coluna.
+    if (coords.horizontalDirection == RIGHT_DIRECTION)
+        square1.col = start_square.col + 1;
+
+    // Movimento vai para esquerda, diminui coluna.
+    else if (coords.horizontalDirection == LEFT_DIRECTION)
+        square1.col = start_square.col - 1;
+
+    // Se square1 existe
+    if ( square_exists(square1) ) {
+        *next_square = square1;
+
+        return true;
+    }
+    else 
+        return false;
 }
 
-int Board::get_white_piece_count() {
-    return _white_piece_count;
+bool Board::move_piece(Piece piece1, MovementCoords coords) {
+    BoardSquare startSquare(piece1.line, piece1.col);
+
+    BoardSquare nextSquare1;
+
+    // Se square não existe.
+    if ( !get_next_square(piece1, 
+        &next_square1, start_square, coords) ) 
+    {
+        return false;
+    }
+
+    char square_type = piece1.game_board->squares
+        [next_square1.line][next_square1.col];
+
+    // Square está vazio, movimento é feito.
+    // Nenhuma peça inimiga capturada.
+    if (square_type == '-') 
+    {
+        make_move(piece1, next_square1);
+
+        // Nenhuma peça foi capturada. Incrementa valor.
+        piece1.game_board->no_piece_captured_count += 1;
+
+        return true;
+    }
+    else {
+        piece1.game_board->no_piece_captured_count = 0;
+    }
+
+    // Square tem peça aliada, movimento inválido. 
+    if ( is_piece_ally(piece1.type, square_type) )
+        return false;
+    
+    // Pega próximo square, após next_square1
+    square next_square2;
+
+    // Square não existe.
+    if ( !get_next_square(piece1, 
+        &next_square2, next_square1, coords) ) 
+    {
+        return false;
+    }
+
+    // Se next_square2 está vazio
+    if ( piece1.game_board->squares
+        [next_square2.line][next_square2.col] == '-')
+    {   
+        // --- Come peça inimiga ---
+        piece1.game_board->squares
+            [next_square1.line][next_square1.col] = '-';
+
+        if (piece1.type == WHITE_STONE || piece1.type == WHITE_DAME)
+            piece1.game_board->black_piece_count -= 1;
+        else if (piece1.type == BLACK_STONE || piece1.type == BLACK_DAME)
+            piece1.game_board->white_piece_count -= 1;
+        
+        // Move peça aliada
+        make_move(piece1, next_square2);
+
+        return true;
+    }
+
+    // Square não está vazio, movimento inválido.
+    else
+        return false;
 }
 
-void Board::set_black_piece_count(int black_piece_count) {
-    _black_piece_count = black_piece_count;
-}
+bool Board::is_piece_ally(char type1, char type2) {
+    
+    if ( type1 == WHITE_STONE 
+        || type1 == WHITE_DAME) 
+    {
 
-int Board::get_black_piece_count() {
-    return _black_piece_count;
-}
+        if ( type2 == WHITE_STONE ||
+            type2 == WHITE_DAME) {
+            return true;
+        }   
 
-void Board::set_white_invalid_move_count(int white_invalid_move_count) {
-    _white_invalid_move_count = white_invalid_move_count;
-}
+    }
 
-int Board::get_white_invalid_move_count() {
-    return _white_invalid_move_count;
-}
+    else if ( type1 == BLACK_STONE 
+        || type1 == BLACK_DAME) 
+    {
 
-void Board::set_black_invalid_move_count(int black_invalid_move_count) {
-    _black_invalid_move_count = black_invalid_move_count;
-}
+        if ( type2 == BLACK_STONE ||
+            type2 == BLACK_DAME) {
+            return true;
+        }   
 
-int Board::get_black_invalid_move_count() {
-    return _black_invalid_move_count;
-}
+    }
 
-void Board::set_no_piece_captured_count(int no_piece_captured_count) {
-    _no_piece_captured_count = no_piece_captured_count;
-}
-
-int Board::get_no_piece_captured_count() {
-    return _no_piece_captured_count;
+    return false;
 }
 
 void Board::place_pieces() {
@@ -123,7 +224,7 @@ void Board::place_pieces() {
     for (int line = 0; line < 3; line++) {
         int col = (line % 2 == 0) ? 1 : 0;
         
-        while (col < _col_count) {
+        while (col < col_count) {
             _squares[line][col] = BLACK_STONE;
             col += 2;
         }
@@ -132,10 +233,10 @@ void Board::place_pieces() {
     int player_piece_count = 0;
 
     // Coloca peças brancas
-    for (int line = _line_count-1; line > _line_count-4; line--) {
+    for (int line = line_count-1; line > line_count-4; line--) {
         int col = (line % 2 == 0) ? 1 : 0;
         
-        while (col < _col_count) {
+        while (col < col_count) {
             _squares[line][col] = WHITE_STONE;
             col += 2;
 
@@ -143,8 +244,8 @@ void Board::place_pieces() {
         }
     }
 
-    _white_piece_count = player_piece_count;
-    _black_piece_count = player_piece_count;
+    white_piece_count = player_piece_count;
+    black_piece_count = player_piece_count;
 }
 
 void Board::make_move(Piece piece1, BoardSquare targetSquare) {

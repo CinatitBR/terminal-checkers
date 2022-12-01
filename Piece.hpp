@@ -12,6 +12,7 @@ public:
   Board* gameBoard;
 
   Piece(char type, int line, int col, Board* gameBoard);
+  static bool is_from_player(Piece piece1, enum Players player);
 }
 
 #endif
